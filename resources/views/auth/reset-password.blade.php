@@ -1,48 +1,44 @@
 <x-guest-layout>
-    <x-auth-card>
-        <x-slot name="logo">
-            <a href="/">
-                <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
-            </a>
-        </x-slot>
+    <div class="flex items-center justify-center bg-gray-100 mt-60">
+        <div class="mb-4 text-sm text-gray-600">
+            {{ __('Thanks for signing up! Before getting started, could you verify your email address by clicking on the link we just emailed to you? If you didn\'t receive the email, we will gladly send you another.') }}
+        </div>
 
-        <!-- Validation Errors -->
-        <x-auth-validation-errors class="mb-4" :errors="$errors" />
-
-        <form method="POST" action="{{ route('password.update') }}">
-            @csrf
-
-            <!-- Password Reset Token -->
-            <input type="hidden" name="token" value="{{ $request->route('token') }}">
-
-            <!-- Email Address -->
-            <div>
-                <x-label for="email" :value="__('Email')" />
-
-                <x-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email', $request->email)" required autofocus />
+        @if (session('status') == 'verification-link-sent')
+            <div class="mb-4 font-medium text-sm text-green-600">
+                {{ __('A new verification link has been sent to the email address you provided during registration.') }}
             </div>
+        @endif
 
-            <!-- Password -->
-            <div class="mt-4">
-                <x-label for="password" :value="__('Password')" />
+        <div class="mt-4 flex items-center justify-between">
 
-                <x-input id="password" class="block mt-1 w-full" type="password" name="password" required />
-            </div>
 
-            <!-- Confirm Password -->
-            <div class="mt-4">
-                <x-label for="password_confirmation" :value="__('Confirm Password')" />
 
-                <x-input id="password_confirmation" class="block mt-1 w-full"
-                                    type="password"
-                                    name="password_confirmation" required />
-            </div>
+            <form class="mt-8" method="post" action="{{route('verification.send')}}">
+                @csrf
 
-            <div class="flex items-center justify-end mt-4">
-                <x-button>
-                    {{ __('Reset Password') }}
-                </x-button>
-            </div>
-        </form>
-    </x-auth-card>
+                <div class="text-center w-6/12 p-10 m-auto">
+
+
+                    <button type="submit" class="w-full bg-blue-600 mt-11 rounded text-white p-2 hover:bg-blue-800 font-medium focus:outline-none">
+                        {{ __('Resend Verification Email') }}
+                    </button>
+
+                </div>
+            </form>
+
+            <form class="mt-8" method="post" action="{{route('logout')}}">
+                @csrf
+
+                <div class="text-center w-6/12 p-10 m-auto">
+
+
+                    <button type="submit" class="w-full bg-blue-600 mt-11 rounded text-white p-2 hover:bg-blue-800 font-medium focus:outline-none">
+                        {{ __('Log Out') }}
+                    </button>
+
+                </div>
+            </form>
+        </div>
+    </div>
 </x-guest-layout>

@@ -21,4 +21,10 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth'])->name('dashboard');
 
+Route::get('/forgot-password', function () {
+   return view('auth.forgot-password');
+})->middleware('guest')->name('password.request');
+
+
+
 require __DIR__.'/auth.php';

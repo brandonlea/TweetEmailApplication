@@ -36,6 +36,9 @@
                     </label>
                 </div>
 
+                <div class="mt-4 float-right">
+                    <a class="font-medium text-blue-700" href="{{route('password.request')}}">Forgot Password?</a>
+                </div>
 
                 <button type="submit" class="w-full bg-blue-600 mt-11 rounded text-white p-2 hover:bg-blue-800 font-medium focus:outline-none">
                     Sign-in
