@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Mail\MailHandler;
 use App\Models\Emails;
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -53,20 +54,20 @@ class SendMail implements ShouldQueue
                 $this->status = $event->getEvent();
                 $this->from = $event->getMessage()['headers']['from'];
                 $this->timestamp = $event->getTimestamp();
-                $this->messageid = $event->getId();
+                $this->messageid = $event->getMessage()['headers']['message-id'];
             }
 
             Emails::query()->updateOrInsert([
                'recipient' => $this->details['email'],
                 'message' => $this->details['message'],
                 'from' => $this->from,
-                'timestamp' => $this->timestamp,
+                'timestamp' => Carbon::now(+1)->timestamp,
                 'message_id' => $this->messageid,
                 'status' => $this->status
             ]);
 
         }, function () {
-            $this->release(15);
+            return $this->release(15);
         });
     }
 }
