@@ -1,4 +1,15 @@
 <x-guest-layout>
+    <div class="w-6/12 text-center m-auto">
+        @if($errors->any())
+            @foreach($errors->all() as $error)
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                    <strong class="font-bold">Holy smokes!</strong>
+                    <span class="block sm:inline">{{ $error }}</span>
+                </div>
+            @endforeach
+        @endif
+    </div>
+
     <div class="flex items-center justify-center bg-gray-100 mt-60">
 
 
