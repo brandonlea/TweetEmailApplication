@@ -9,10 +9,10 @@ class Emails extends Model
 {
     use HasFactory;
 
+    public $timestamps = false;
+
     protected $fillable = ['email', 'message'];
 
     protected $table = "emails";
 
-    const CREATED_AT = 'created_at';
-    const UPDATED_AT = 'updated_at';
 }

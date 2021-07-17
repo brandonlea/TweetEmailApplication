@@ -19,8 +19,10 @@ class SentEmailsTable extends Migration
             $table->string('message');
             $table->string('from');
             $table->string('timestamp');
+            $table->string('message_id');
             $table->string('status');
-            $table->timestamps();
+            $table->timestamp('created_at')->default(\DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamp('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
         });
     }
 

@@ -26,5 +26,4 @@ Route::get('/forgot-password', function () {
 })->middleware('guest')->name('password.request');
 
 
-
 require __DIR__.'/auth.php';

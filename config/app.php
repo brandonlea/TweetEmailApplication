@@ -70,6 +70,18 @@ return [
     'timezone' => 'UTC',
 
     /*
+   |--------------------------------------------------------------------------
+   | Mailgun Data
+   |--------------------------------------------------------------------------
+   */
+
+    'mailgun_key' => env('MAILGUN_SECRET'),
+    'mailgun_domain' => env('MAILGUN_DOMAIN'),
+    'mailgun_sign' => env('MAILGUN_SIGN'),
+    'email_from' => env('MAIL_FROM_ADDRESS'),
+    'email_subject' => env('MAIL_FROM_NAME'),
+
+    /*
     |--------------------------------------------------------------------------
     | Application Locale Configuration
     |--------------------------------------------------------------------------

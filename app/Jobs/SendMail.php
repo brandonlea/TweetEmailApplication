@@ -2,10 +2,12 @@
 
 namespace App\Jobs;
 
+use App\Mail\MailHandler;
 use App\Models\Emails;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Contracts\Redis\LimiterTimeoutException;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
@@ -20,6 +22,7 @@ class SendMail implements ShouldQueue
     protected $status;
     protected $from;
     protected $timestamp;
+    protected $messageid;
 
     /**
      * Create a new job instance.
@@ -35,12 +38,13 @@ class SendMail implements ShouldQueue
      * Execute the job.
      *
      * @return void
+     * @throws LimiterTimeoutException
      */
     public function handle()
     {
         Redis::throttle($this->details['email'])->allow(1)->every(15)->then(function () {
 
-            \Mail::to($this->details['email'])->send();
+            \Mail::to($this->details['email'])->send(new MailHandler($this->details));
 
             $client = Mailgun::create(config('app.mailgun_key'));
 
@@ -49,12 +53,15 @@ class SendMail implements ShouldQueue
                 $this->status = $event->getEvent();
                 $this->from = $event->getMessage()['headers']['from'];
                 $this->timestamp = $event->getTimestamp();
+                $this->messageid = $event->getId();
             }
 
-            Emails::query()->insert([
+            Emails::query()->updateOrInsert([
                'recipient' => $this->details['email'],
                 'message' => $this->details['message'],
-                'from' => $this->timestamp,
+                'from' => $this->from,
+                'timestamp' => $this->timestamp,
+                'message_id' => $this->messageid,
                 'status' => $this->status
             ]);
 
