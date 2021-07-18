@@ -3,6 +3,8 @@
 namespace App\Http\Livewire;
 
 use App\Jobs\SendMail;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Validation\ValidationException;
 use Livewire\Component;
 
 class EmailForms extends Component
@@ -25,35 +27,56 @@ class EmailForms extends Component
 
     public function render()
     {
-
-
-
         return view('livewire.email-forms');
     }
 
 
     public function submitMessage() {
-        $details = $this->validate();
 
+
+        $details = $this->validate();
 
 
         $details['email'] = $this->email;
         $details['message'] = $this->message;
 
 
-        $this->success_message = 'You have sent an email please wait up to 15 seconds before sending another one thanks.';
 
         $data = [
             'email' => $this->email,
-            'message' => $this->message
+            'message' => $this->message,
+            'key' => $this->throttleKey(),
         ];
 
 
+        $this->ensureIsNotRateLimited($data);
 
-        dispatch(new SendMail($data));
+
+
 
         $this->resetForm();
 
+    }
+
+
+    public function ensureIsNotRateLimited($data)
+    {
+        if(!RateLimiter::tooManyAttempts($this->throttleKey(), 1)) {
+            dispatch(new SendMail($data));
+            RateLimiter::clear($this->throttleKey());
+            $this->success_message = 'You have sent an email please wait up to 15 seconds before sending another one thanks.';
+            return;
+        }
+
+        $seconds = RateLimiter::availableIn($this->throttleKey());
+
+        session()->flash('error', 'Please allow up to 15 seconds before sending a email you have ' . $seconds . ' Seconds Left');
+        $this->success_message = '';
+    }
+
+    public function throttleKey()
+    {
+        return \Str::lower($this->email);
     }
 
     private function resetForm() {

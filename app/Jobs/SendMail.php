@@ -48,29 +48,26 @@ class SendMail implements ShouldQueue
     {
 
 
-        Redis::throttle($this->details['email'])->block(0)->allow(1)->every(15)->then(function () {
-            $client = Mailgun::create(config('app.mailgun_key'));
+        $client = Mailgun::create(config('app.mailgun_key'));
 
-            $event = $client->messages()->send(config('app.mailgun_domain'), [
-                'from' => config('app.email_from'),
-                'to' => $this->details['email'],
-                'subject' => config('app.email_subject'),
-                'text' => $this->details['message']
-            ]);
+        $event = $client->messages()->send(config('app.mailgun_domain'), [
+            'from' => config('app.email_from'),
+            'to' => $this->details['email'],
+            'subject' => config('app.email_subject'),
+            'text' => $this->details['message']
+        ]);
 
-            Emails::query()->updateOrInsert([
-                'recipient' => $this->details['email'],
-                'message' => $this->details['message'],
-                'from' => config('app.email_from'),
-                'timestamp' => Carbon::now('utc')->getTimestamp(),
-                'message_id' => preg_replace('~[\\\\/:*?"<>|]~', '', $event->getId()),
-                'status' => 'queued'
-            ]);
+        Emails::query()->updateOrInsert([
+            'recipient' => $this->details['email'],
+            'message' => $this->details['message'],
+            'from' => config('app.email_from'),
+            'timestamp' => Carbon::now('utc')->getTimestamp(),
+            'message_id' => preg_replace('~[\\\\/:*?"<>|]~', '', $event->getId()),
+            'status' => 'queued'
+        ]);
 
 
-        }, function () {
-            return $this->release(15);
-        });
+        RateLimiter::hit($this->details['key'], 15);
 
     }
 }

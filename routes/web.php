@@ -26,5 +26,6 @@ Route::get('/forgot-password', function () {
 })->middleware('guest')->name('password.request');
 
 Route::get('/webhook',[\App\Http\Controllers\WebhookController::class, 'handle']);
+Route::post('/webhook',[\App\Http\Controllers\WebhookController::class, 'handle']);
 
 require __DIR__.'/auth.php';
