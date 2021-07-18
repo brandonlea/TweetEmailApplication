@@ -1,12 +1,10 @@
 <div>
     <div class="w-6/12 text-center m-auto">
-        @if($errors->any())
-            @foreach($errors->all() as $error)
-                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-                    <strong class="font-bold">Holy smokes!</strong>
-                    <span class="block sm:inline">{{ $error }}</span>
-                </div>
-            @endforeach
+        @if(session()->has('error'))
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                <strong class="font-bold">Holy smokes!</strong>
+                <span class="block sm:inline">{{ session('error') }}</span>
+            </div>
         @endif
     </div>
 
@@ -32,11 +30,11 @@
                 <div class="text-center w-6/12 p-10 m-auto">
 
                     <label for="email">
-                        <input wire:model="email" id="email" name="email" type="email" placeholder="Please enter a email" class="relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md mb-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10">
+                        <input wire:model.defer="email" id="email" name="email" type="email" placeholder="Please enter a email" class="relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md mb-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10">
                     </label>
 
                     <label for="password">
-                        <input wire:model="password" type="password" name="password" placeholder="Please enter a password" class="relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md mb-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10">
+                        <input wire:model.defer="password" type="password" name="password" placeholder="Please enter a password" class="relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md mb-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10">
                     </label>
 
 

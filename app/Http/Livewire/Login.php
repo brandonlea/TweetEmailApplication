@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire;
 
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class Login extends Component
@@ -10,25 +11,19 @@ class Login extends Component
     public $email;
     public $password;
 
-    protected $rules = [
-        'email' => 'required|email|unique:users',
-        'password' => 'required|password:'
-    ];
-
-    public function updated($propertyName)
-    {
-        $this->validateOnly($propertyName);
-    }
 
     public function login()
     {
-        $credentials = $this->validate();
+        $validatedDate = $this->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
 
-        $credentials['email'] = $this->email;
-        $credentials['password'] = $this->email;
 
-        if(\Auth::attempt($credentials)) {
-            return redirect()->intended('dashboard');
+        if(Auth::attempt(['email' => $this->email, 'password' => $this->password])) {
+            redirect()->intended('dashboard');
+        } else {
+            session()->flash('error', 'email and password are wrong!');
         }
     }
 

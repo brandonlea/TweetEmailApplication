@@ -12,6 +12,7 @@ use Illuminate\Contracts\Redis\LimiterTimeoutException;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Redis;
 use Mailgun\Mailgun;
 
@@ -20,10 +21,12 @@ class SendMail implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $details;
-    protected $status;
-    protected $from;
-    protected $timestamp;
     protected $messageid;
+    protected $from;
+    protected $status;
+    protected $timestamp;
+
+
 
     /**
      * Create a new job instance.
@@ -43,31 +46,31 @@ class SendMail implements ShouldQueue
      */
     public function handle()
     {
-        Redis::throttle($this->details['email'])->allow(1)->every(15)->then(function () {
 
-            \Mail::to($this->details['email'])->send(new MailHandler($this->details));
 
+        Redis::throttle($this->details['email'])->block(0)->allow(1)->every(15)->then(function () {
             $client = Mailgun::create(config('app.mailgun_key'));
 
-            foreach ($client->events()->get(config('app.mailgun_domain'))->getItems() as $event)
-            {
-                $this->status = $event->getEvent();
-                $this->from = $event->getMessage()['headers']['from'];
-                $this->timestamp = $event->getTimestamp();
-                $this->messageid = $event->getMessage()['headers']['message-id'];
-            }
+            $event = $client->messages()->send(config('app.mailgun_domain'), [
+                'from' => config('app.email_from'),
+                'to' => $this->details['email'],
+                'subject' => config('app.email_subject'),
+                'text' => $this->details['message']
+            ]);
 
             Emails::query()->updateOrInsert([
-               'recipient' => $this->details['email'],
+                'recipient' => $this->details['email'],
                 'message' => $this->details['message'],
-                'from' => $this->from,
-                'timestamp' => Carbon::now(+1)->timestamp,
-                'message_id' => $this->messageid,
-                'status' => $this->status
+                'from' => config('app.email_from'),
+                'timestamp' => Carbon::now('utc')->getTimestamp(),
+                'message_id' => preg_replace('~[\\\\/:*?"<>|]~', '', $event->getId()),
+                'status' => 'queued'
             ]);
+
 
         }, function () {
             return $this->release(15);
         });
+
     }
 }

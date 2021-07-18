@@ -15,24 +15,29 @@ class Register extends Component
     public $name;
     public $email;
     public $password;
+    public $password_confirmation;
 
+
+    protected $rules = [
+        'name' => 'required|string|max:255',
+        'email' => 'required|string|email|max:255|unique:users',
+        'password' => 'required|min:8|confirmed',
+        'password_confirmation' => 'required|min:8'
+    ];
 
     public function updated($propertyName)
     {
         $this->validateOnly($propertyName);
     }
 
-    public function login()
+    public function register()
     {
-        $credentials = $this->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => ['required', 'confirmed', Rules\Password::defaults()]
-        ]);
+        $credentials = $this->validate();
 
         $credentials['name'] = $this->name;
         $credentials['email'] = $this->email;
-        $credentials['password'] = $this->email;
+        $credentials['password'] = $this->password;
+        $credentials['password_confirmation'] = $this->password_confirmation;
 
 
         $user = User::create([

@@ -34,7 +34,7 @@
                 <div class="text-center w-6/12 p-10 m-auto">
 
                     <label for="name">
-                        <input wire:model="name" id="name" name="name" type="text" placeholder="Please enter your name" class="relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md mb-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10">
+                        <input wire:model.defer="name" id="name" name="name" type="text" placeholder="Please enter your name" class="relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md mb-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10">
                     </label>
 
                     <label for="email">
@@ -42,11 +42,11 @@
                     </label>
 
                     <label for="password">
-                        <input wire:model="password" type="password" name="password" placeholder="Please enter a password" class="relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md mb-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10">
+                        <input wire:model.defer="password" type="password" name="password" placeholder="Please enter a password" class="relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md mb-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10">
                     </label>
 
                     <label for="password_confirmation">
-                        <input  type="password" name="password_confirmation" placeholder="Please confirm your password" class="relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md mb-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10">
+                        <input wire:model.defer="password_confirmation"   type="password" name="password_confirmation" placeholder="Please confirm your password" class="relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md mb-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10">
                     </label>
 
 
