@@ -33,6 +33,7 @@ class EmailForms extends Component
 
     public function submitMessage() {
 
+        $this->validate();
 
         $data = [
             'email' => $this->email,
