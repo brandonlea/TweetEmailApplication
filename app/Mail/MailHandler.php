@@ -2,6 +2,8 @@
 
 namespace App\Mail;
 
+use App\Models\Emails;
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -30,6 +32,20 @@ class MailHandler extends Mailable
      */
     public function build()
     {
+
+        $this->withSwiftMessage(function ($swiftMessage) {
+
+            Emails::query()->updateOrInsert([
+                'recipient' => $this->details['email'],
+                'message' => $this->details['message'],
+                'from' => config('app.email_from'),
+                'timestamp' => Carbon::now('utc')->getTimestamp(),
+                'message_id' => $swiftMessage->getId(),
+                'user_id' => $this->details['id'],
+                'status' => 'queued'
+            ]);
+        });
+
         return $this->from(config('app.email_from'))
             ->subject(config('app.email_subject'))
             ->view('emails.email')

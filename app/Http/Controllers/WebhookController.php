@@ -22,6 +22,7 @@ class WebhookController extends Controller
             $event = $input['event-data'];
 
 
+
             Emails::query()->where('message_id', '=', $event['message']['headers']['message-id'])->update([
                 'status' => $event['event'] == 'delivered' ? 'sent' : $event['event'],
             ]);

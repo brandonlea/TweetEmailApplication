@@ -34,18 +34,11 @@ class EmailForms extends Component
     public function submitMessage() {
 
 
-        $details = $this->validate();
-
-
-        $details['email'] = $this->email;
-        $details['message'] = $this->message;
-
-
-
         $data = [
             'email' => $this->email,
             'message' => $this->message,
             'key' => $this->throttleKey(),
+            'id' => \Auth::id()
         ];
 
 

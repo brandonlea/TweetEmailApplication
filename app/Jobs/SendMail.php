@@ -4,6 +4,8 @@ namespace App\Jobs;
 
 use App\Mail\MailHandler;
 use App\Models\Emails;
+use App\Models\User;
+use App\Notifications\EmailNotification;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -12,6 +14,7 @@ use Illuminate\Contracts\Redis\LimiterTimeoutException;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Redis;
 use Mailgun\Mailgun;
@@ -42,29 +45,17 @@ class SendMail implements ShouldQueue
      * Execute the job.
      *
      * @return void
-     * @throws LimiterTimeoutException
      */
     public function handle()
     {
 
 
-        $client = Mailgun::create(config('app.mailgun_key'));
 
-        $event = $client->messages()->send(config('app.mailgun_domain'), [
-            'from' => config('app.email_from'),
-            'to' => $this->details['email'],
-            'subject' => config('app.email_subject'),
-            'text' => $this->details['message']
-        ]);
+        $user = User::findOrFail($this->details['id']);
 
-        Emails::query()->updateOrInsert([
-            'recipient' => $this->details['email'],
-            'message' => $this->details['message'],
-            'from' => config('app.email_from'),
-            'timestamp' => Carbon::now('utc')->getTimestamp(),
-            'message_id' => preg_replace('~[\\\\/:*?"<>|]~', '', $event->getId()),
-            'status' => 'queued'
-        ]);
+
+        $user->notify(new EmailNotification($this->details));
+
 
 
         RateLimiter::hit($this->details['key'], 15);

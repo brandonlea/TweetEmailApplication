@@ -1,4 +1,4 @@
-<center class="pt-64">
+<center class="py-64">
     <table class="table-auto border-l bg-white rounded">
         <thead class="bg-gray-100 shadow">
         <tr>

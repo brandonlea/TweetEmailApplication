@@ -5,6 +5,9 @@
         </h2>
     </x-slot>
 
+    @livewire('email-forms')
+
+
     @livewire('email-table')
 
 </x-app-layout>

@@ -1,4 +1,3 @@
 <x-guest-layout>
-    @livewire('email-forms')
+    @livewire('status-table')
 </x-guest-layout>
-
